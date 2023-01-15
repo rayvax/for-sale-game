@@ -26,6 +26,7 @@ export class Game {
         hasPassed: player.hasPassed,
         handCoinsCount: player.handCoinsCount,
         bidCoinsCount: player.biddedCoinsCount,
+        properties: (player as any)._hand.properties,
       })),
       table: {
         properties: this._table.properties,
