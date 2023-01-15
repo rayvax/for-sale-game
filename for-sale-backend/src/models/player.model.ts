@@ -1,10 +1,10 @@
 export class Player {
   private _login: string;
   private _hasPassed: boolean;
-  private _handCoinsCount: number;
   private _biddedCoinsCount: number;
 
   private _hand: {
+    coinsCount: number;
     properties: number[];
     money: number[];
 
@@ -25,7 +25,7 @@ export class Player {
   }
 
   public get handCoinsCount(): number {
-    return this._handCoinsCount;
+    return this._hand.coinsCount;
   }
 
   public get biddedCoinsCount(): number {
@@ -36,26 +36,34 @@ export class Player {
     return this._hand.biddedProperty;
   }
 
-  public get hand() {
-    return this._hand;
-  }
-
-  public get last() {
-    return this._last;
-  }
-
   public get pointsCount() {
     const moneyPoints = this._hand.money.reduce((prev, cur) => prev + cur, 0);
-    return moneyPoints + this._handCoinsCount;
+    return moneyPoints + this._hand.coinsCount;
+  }
+
+  public get publicData() {
+    return {
+      login: this._login,
+      hasPassed: this._hasPassed,
+      biddedCoinsCount: this._biddedCoinsCount,
+      last: { ...this._last },
+    };
+  }
+
+  public get hand() {
+    return {
+      coinsCount: this._hand,
+      properties: [...this._hand.properties],
+      money: [...this._hand.money],
+    };
   }
 
   constructor(login: string, coinsCount: number) {
     this._login = login;
-    this._handCoinsCount = coinsCount;
 
     this._hasPassed = false;
     this._biddedCoinsCount = 0;
-    this._hand = { properties: [], money: [], biddedProperty: null };
+    this._hand = { coinsCount, properties: [], money: [], biddedProperty: null };
     this._last = {};
   }
 
@@ -63,7 +71,7 @@ export class Player {
    * @param property earned property
    */
   public pass(property: number) {
-    this._handCoinsCount += Math.ceil(this._biddedCoinsCount / 2);
+    this._hand.coinsCount += Math.ceil(this._biddedCoinsCount / 2);
     this._biddedCoinsCount = 0;
     this._hasPassed = true;
     this.takeProperty(property);
@@ -79,11 +87,11 @@ export class Player {
       throw new Error('Bid should be more than 0');
     }
 
-    if (bidAmmount > this._handCoinsCount + this._biddedCoinsCount) {
+    if (bidAmmount > this._hand.coinsCount + this._biddedCoinsCount) {
       throw new Error('Not enought coins for bid');
     }
 
-    this._handCoinsCount -= bidAmmount - this._biddedCoinsCount;
+    this._hand.coinsCount -= bidAmmount - this._biddedCoinsCount;
     this._biddedCoinsCount = bidAmmount;
   }
 

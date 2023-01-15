@@ -30,15 +30,12 @@ export class Game {
       return ratedPlayers;
     }
 
+    const playerIndex = this._players.findIndex((p) => p.login === login);
+
     return {
       currentPlayer: this.currentPlayer.login,
-      players: this._players.map((player) => ({
-        login: player.login,
-        hasPassed: player.hasPassed,
-        handCoinsCount: player.handCoinsCount,
-        bidCoinsCount: player.biddedCoinsCount,
-        properties: (player as any)._hand.properties,
-      })),
+      hand: this._players[playerIndex].hand,
+      players: this._players.map((player) => player.publicData),
       table: {
         properties: this._table.properties,
         money: this._table.money,
