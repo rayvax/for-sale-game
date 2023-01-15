@@ -32,12 +32,21 @@ export class Player {
     return this._biddedCoinsCount;
   }
 
+  public get biddedProperty(): number | null {
+    return this._hand.biddedProperty;
+  }
+
   public get hand() {
     return this._hand;
   }
 
   public get last() {
     return this._last;
+  }
+
+  public get pointsCount() {
+    const moneyPoints = this._hand.money.reduce((prev, cur) => prev + cur, 0);
+    return moneyPoints + this._handCoinsCount;
   }
 
   constructor(login: string, coinsCount: number) {
@@ -89,7 +98,7 @@ export class Player {
     }
 
     this._hand.biddedProperty = this._hand.properties[targetIndex];
-    this._hand.properties.splice(targetIndex);
+    this._hand.properties.splice(targetIndex, 1);
   }
 
   public takeMoney(money: number) {

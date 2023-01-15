@@ -11,3 +11,7 @@ export class PlayerDto {
 export class BidCoinsDto extends PlayerDto {
   bidAmmount: number;
 }
+
+export class BidPropertyDto extends PlayerDto {
+  property: number;
+}

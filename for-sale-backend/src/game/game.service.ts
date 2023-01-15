@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Game } from 'src/models/game.model';
 import { parseErrorMessage } from 'src/utils/errot';
-import { BidCoinsDto, CreateGameDto, PlayerDto } from './game.dtos';
+import { BidCoinsDto, BidPropertyDto, CreateGameDto, PlayerDto } from './game.dtos';
 
 type GamesList = { [key: string]: Game };
 
@@ -15,7 +15,6 @@ export class GameService {
 
   public createGame({ roomCode, logins }: CreateGameDto) {
     this.gamesList[roomCode] = new Game(logins);
-    return this.gamesList[roomCode];
   }
 
   public getGameState({ roomCode, login }: PlayerDto) {
@@ -40,6 +39,14 @@ export class GameService {
   public pass({ roomCode, login }: PlayerDto) {
     try {
       this.gamesList[roomCode].pass(login);
+    } catch (e) {
+      throw new HttpException(parseErrorMessage(e), HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public bidProperty({ roomCode, login, property }: BidPropertyDto) {
+    try {
+      this.gamesList[roomCode].bidProperty(login, property);
     } catch (e) {
       throw new HttpException(parseErrorMessage(e), HttpStatus.BAD_REQUEST);
     }

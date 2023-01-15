@@ -19,6 +19,17 @@ export class Game {
   }
 
   public getGameState(login: string) {
+    if (this.gamePhase === 'FINAL') {
+      const ratedPlayers = this._players.map((player) => ({
+        login: player.login,
+        pointsCount: player.pointsCount,
+      }));
+
+      ratedPlayers.sort((a, b) => b.pointsCount - a.pointsCount);
+
+      return ratedPlayers;
+    }
+
     return {
       currentPlayer: this.currentPlayer.login,
       players: this._players.map((player) => ({
@@ -66,7 +77,22 @@ export class Game {
     }
   }
 
-  public bidProperty(login: string, property: number) {}
+  public bidProperty(login: string, property: number) {
+    const gamePhase = this.gamePhase;
+    if (gamePhase !== 'BID_PROPERTY')
+      throw new Error('This action is impossible in current game phase');
+
+    //bid property
+    const currentPlayer = this._players.find((p) => p.login === login);
+    currentPlayer.bidProperty(property);
+
+    //check whether all bidded
+    if (this._players.every((p) => p.biddedProperty !== null)) {
+      this.distributeMoney();
+
+      if (this._deck.moneyCount > 0) this.startNextRound(gamePhase);
+    }
+  }
 
   private get currentPlayer(): Player {
     return this._players[this._currentPlayerIndex];
@@ -105,15 +131,28 @@ export class Game {
   }
 
   private startNextRound(gamePhase: GamePhase) {
-    this._table.startNextRound(gamePhase);
+    this._table.startNextRound();
 
-    for (const player of this._players) player.startNewRound();
+    if (gamePhase === 'BID_COINS') {
+      for (const player of this._players) player.startNewRound();
+    }
   }
 
   private changeCurrentTurnPlayer() {
     do {
       this._currentPlayerIndex = this.nextTurnPlayer;
     } while (this._players[this._currentPlayerIndex].hasPassed);
+  }
+
+  private distributeMoney() {
+    const ratedPlayers = [...this._players].sort(
+      (a, b) => a.biddedProperty - b.biddedProperty,
+    );
+
+    for (const player of ratedPlayers) {
+      const winMoney = this._table.popMoney();
+      player.takeMoney(winMoney);
+    }
   }
 }
 

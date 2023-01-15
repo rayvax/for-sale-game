@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { BidCoinsDto, CreateGameDto, PlayerDto } from './game.dtos';
+import { BidCoinsDto, BidPropertyDto, CreateGameDto, PlayerDto } from './game.dtos';
 import { GameService } from './game.service';
 
 @Controller('game')
@@ -29,5 +29,10 @@ export class GameController {
   @Post('/pass')
   async pass(@Body() dto: PlayerDto) {
     return this.gameService.pass(dto);
+  }
+
+  @Post('/bid-property')
+  async bidProperty(@Body() dto: BidPropertyDto) {
+    return this.gameService.bidProperty(dto);
   }
 }
