@@ -24,7 +24,7 @@ export class GameService {
     try {
       return this.gamesList[roomCode].getGameState(login);
     } catch (e) {
-      throw new HttpException(parseErrorMessage(e), HttpStatus.BAD_REQUEST);
+      this.throwProperError(e);
     }
   }
 
@@ -32,7 +32,7 @@ export class GameService {
     try {
       this.gamesList[roomCode].bidCoins(login, bidAmmount);
     } catch (e) {
-      throw new HttpException(parseErrorMessage(e), HttpStatus.BAD_REQUEST);
+      this.throwProperError(e);
     }
   }
 
@@ -40,7 +40,7 @@ export class GameService {
     try {
       this.gamesList[roomCode].pass(login);
     } catch (e) {
-      throw new HttpException(parseErrorMessage(e), HttpStatus.BAD_REQUEST);
+      this.throwProperError(e);
     }
   }
 
@@ -48,11 +48,17 @@ export class GameService {
     try {
       this.gamesList[roomCode].bidProperty(login, property);
     } catch (e) {
-      throw new HttpException(parseErrorMessage(e), HttpStatus.BAD_REQUEST);
+      this.throwProperError(e);
     }
   }
 
   public getAllGames() {
     return this.gamesList;
+  }
+
+  private throwProperError(error: unknown) {
+    if (error instanceof HttpException) throw error;
+
+    throw new HttpException(parseErrorMessage(error), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

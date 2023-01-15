@@ -1,3 +1,5 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
+
 export class Player {
   private _login: string;
   private _hasPassed: boolean;
@@ -52,7 +54,7 @@ export class Player {
 
   public get hand() {
     return {
-      coinsCount: this._hand,
+      ...this._hand,
       properties: [...this._hand.properties],
       money: [...this._hand.money],
     };
@@ -84,11 +86,11 @@ export class Player {
 
   public bidCoins(bidAmmount: number) {
     if (bidAmmount <= 0) {
-      throw new Error('Bid should be more than 0');
+      throw new HttpException('Bid should be more than 0', HttpStatus.BAD_REQUEST);
     }
 
     if (bidAmmount > this._hand.coinsCount + this._biddedCoinsCount) {
-      throw new Error('Not enought coins for bid');
+      throw new HttpException('Not enought coins for bid', HttpStatus.BAD_REQUEST);
     }
 
     this._hand.coinsCount -= bidAmmount - this._biddedCoinsCount;
@@ -97,12 +99,12 @@ export class Player {
 
   public bidProperty(property: number) {
     if (this._hand.biddedProperty) {
-      throw new Error('You already have bid property');
+      throw new HttpException('You already have bid property', HttpStatus.BAD_REQUEST);
     }
 
     const targetIndex = this._hand.properties.indexOf(property);
     if (targetIndex === -1) {
-      throw new Error("You don't this property in hand");
+      throw new HttpException("You don't this property in hand", HttpStatus.BAD_REQUEST);
     }
 
     this._hand.biddedProperty = this._hand.properties[targetIndex];

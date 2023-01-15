@@ -1,5 +1,5 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Deck } from './deck.model';
-import { GamePhase } from './game.model';
 
 export class Table {
   private _deck: Deck;
@@ -39,12 +39,14 @@ export class Table {
   }
 
   public popProperty() {
-    if (!this._properties) throw new Error('No property on table');
+    if (!this._properties)
+      throw new HttpException('No property on table', HttpStatus.BAD_REQUEST);
 
     return this._properties.shift();
   }
   public popMoney() {
-    if (!this._money) throw new Error('No money on table');
+    if (!this._money)
+      throw new HttpException('No money on table', HttpStatus.BAD_REQUEST);
 
     return this._money.shift();
   }

@@ -1,3 +1,4 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { shuffle } from 'src/utils/array';
 import { Deck } from './deck.model';
 import { Player } from './player.model';
@@ -45,11 +46,19 @@ export class Game {
 
   public bidCoins(login: string, newBidAmmount: number) {
     if (this.gamePhase !== 'BID_COINS')
-      throw new Error('This action is impossible in current game phase');
+      throw new HttpException(
+        'This action is impossible in current game phase',
+        HttpStatus.BAD_REQUEST,
+      );
 
-    if (!this.isCurrentTurnPlayer(login)) throw new Error('It is not your turn');
+    if (!this.isCurrentTurnPlayer(login))
+      throw new HttpException('It is not your turn', HttpStatus.BAD_REQUEST);
+
     if (this._players.some((p) => p.biddedCoinsCount >= newBidAmmount))
-      throw new Error('Your bid should become the biggest');
+      throw new HttpException(
+        'Your bid should become the biggest',
+        HttpStatus.BAD_REQUEST,
+      );
 
     this.currentPlayer.bidCoins(newBidAmmount);
     this.startNextTurn();
@@ -58,9 +67,13 @@ export class Game {
   public pass(login: string) {
     const gamePhase = this.gamePhase;
     if (gamePhase !== 'BID_COINS')
-      throw new Error('This action is impossible in current game phase');
+      throw new HttpException(
+        'This action is impossible in current game phase',
+        HttpStatus.BAD_REQUEST,
+      );
 
-    if (!this.isCurrentTurnPlayer(login)) throw new Error('It is not your turn');
+    if (!this.isCurrentTurnPlayer(login))
+      throw new HttpException('It is not your turn', HttpStatus.BAD_REQUEST);
 
     const property = this._table.popProperty();
     this.currentPlayer.pass(property);
@@ -77,7 +90,10 @@ export class Game {
   public bidProperty(login: string, property: number) {
     const gamePhase = this.gamePhase;
     if (gamePhase !== 'BID_PROPERTY')
-      throw new Error('This action is impossible in current game phase');
+      throw new HttpException(
+        'This action is impossible in current game phase',
+        HttpStatus.BAD_REQUEST,
+      );
 
     //bid property
     const currentPlayer = this._players.find((p) => p.login === login);
@@ -118,7 +134,11 @@ export class Game {
   private isCurrentTurnPlayer(login: string): boolean {
     const targetIndex = this._players.findIndex((p) => p.login === login);
 
-    if (targetIndex === -1) throw new Error('Player with that login is not in game');
+    if (targetIndex === -1)
+      throw new HttpException(
+        'Player with that login is not in game',
+        HttpStatus.BAD_REQUEST,
+      );
 
     return targetIndex === this._currentPlayerIndex;
   }
