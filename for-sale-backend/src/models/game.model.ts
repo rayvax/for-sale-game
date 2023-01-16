@@ -21,10 +21,7 @@ export class Game {
 
   public getGameState(login: string) {
     if (this.gamePhase === 'FINAL') {
-      const ratedPlayers = this._players.map((player) => ({
-        login: player.login,
-        pointsCount: player.pointsCount,
-      }));
+      const ratedPlayers = this._players.map((player) => player.finalScoreData);
 
       ratedPlayers.sort((a, b) => b.pointsCount - a.pointsCount);
 

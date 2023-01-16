@@ -38,11 +38,6 @@ export class Player {
     return this._hand.biddedProperty;
   }
 
-  public get pointsCount() {
-    const moneyPoints = this._hand.money.reduce((prev, cur) => prev + cur, 0);
-    return moneyPoints + this._hand.coinsCount;
-  }
-
   public get publicData() {
     return {
       login: this._login,
@@ -56,6 +51,15 @@ export class Player {
     return {
       ...this._hand,
       properties: [...this._hand.properties],
+      money: [...this._hand.money],
+    };
+  }
+
+  public get finalScoreData() {
+    return {
+      login: this._login,
+      pointsCount: this.countPoints(),
+      handCoinsCount: this._hand.coinsCount,
       money: [...this._hand.money],
     };
   }
@@ -126,5 +130,10 @@ export class Player {
   private takeProperty(property: number) {
     this._hand.properties = [...this._hand.properties, property];
     this._last.property = property;
+  }
+
+  private countPoints() {
+    const moneyPoints = this._hand.money.reduce((prev, cur) => prev + cur, 0);
+    return moneyPoints + this._hand.coinsCount;
   }
 }

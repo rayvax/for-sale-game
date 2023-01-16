@@ -20,8 +20,6 @@ export class Deck {
     if (playerCount == 4) cardsCount -= 2;
     else if (playerCount == 3) cardsCount -= 6;
 
-    cardsCount = 6;
-
     //properties
     const propertyCards = shuffle(createNumberArray(maxDeckCardsCount, 1));
 

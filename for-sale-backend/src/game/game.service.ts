@@ -24,7 +24,7 @@ export class GameService {
     try {
       return this.gamesList[roomCode].getGameState(login);
     } catch (e) {
-      this.throwProperError(e);
+      this.throwHttpException(e);
     }
   }
 
@@ -32,7 +32,7 @@ export class GameService {
     try {
       this.gamesList[roomCode].bidCoins(login, bidAmmount);
     } catch (e) {
-      this.throwProperError(e);
+      this.throwHttpException(e);
     }
   }
 
@@ -40,7 +40,7 @@ export class GameService {
     try {
       this.gamesList[roomCode].pass(login);
     } catch (e) {
-      this.throwProperError(e);
+      this.throwHttpException(e);
     }
   }
 
@@ -48,7 +48,7 @@ export class GameService {
     try {
       this.gamesList[roomCode].bidProperty(login, property);
     } catch (e) {
-      this.throwProperError(e);
+      this.throwHttpException(e);
     }
   }
 
@@ -56,7 +56,9 @@ export class GameService {
     return this.gamesList;
   }
 
-  private throwProperError(error: unknown) {
+  private throwHttpException(error: unknown) {
+    //http exception should be specifically thrown like
+    //otherwise there just would be 500 code
     if (error instanceof HttpException) throw error;
 
     throw new HttpException(parseErrorMessage(error), HttpStatus.INTERNAL_SERVER_ERROR);
