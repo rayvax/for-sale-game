@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Game } from 'src/models/game.model';
+import { Game } from 'src/game/models/game.model';
 import { parseErrorMessage } from 'src/utils/errot';
 import { BidCoinsDto, BidPropertyDto, CreateGameDto, PlayerDto } from './game.dtos';
 
@@ -7,22 +7,24 @@ type GamesList = { [key: string]: Game };
 
 @Injectable()
 export class GameService {
-  private gamesList: GamesList;
+  private static _gamesList: GamesList;
 
   constructor() {
-    this.gamesList = {};
+    GameService._gamesList = {};
   }
 
   public createGame({ roomCode, logins }: CreateGameDto) {
-    this.gamesList[roomCode] = new Game(logins);
+    GameService._gamesList[roomCode] = new Game(logins);
+    console.log(GameService._gamesList);
   }
 
   public getGameState({ roomCode, login }: PlayerDto) {
-    if (!this.gamesList[roomCode])
+    console.log(GameService._gamesList);
+    if (!GameService._gamesList[roomCode])
       throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
 
     try {
-      return this.gamesList[roomCode].getGameState(login);
+      return GameService._gamesList[roomCode].getGameState(login);
     } catch (e) {
       this.throwHttpException(e);
     }
@@ -30,7 +32,7 @@ export class GameService {
 
   public bidCoins({ roomCode, login, bidAmmount }: BidCoinsDto) {
     try {
-      this.gamesList[roomCode].bidCoins(login, bidAmmount);
+      GameService._gamesList[roomCode].bidCoins(login, bidAmmount);
     } catch (e) {
       this.throwHttpException(e);
     }
@@ -38,7 +40,7 @@ export class GameService {
 
   public pass({ roomCode, login }: PlayerDto) {
     try {
-      this.gamesList[roomCode].pass(login);
+      GameService._gamesList[roomCode].pass(login);
     } catch (e) {
       this.throwHttpException(e);
     }
@@ -46,14 +48,14 @@ export class GameService {
 
   public bidProperty({ roomCode, login, property }: BidPropertyDto) {
     try {
-      this.gamesList[roomCode].bidProperty(login, property);
+      GameService._gamesList[roomCode].bidProperty(login, property);
     } catch (e) {
       this.throwHttpException(e);
     }
   }
 
   public getAllGames() {
-    return this.gamesList;
+    return GameService._gamesList;
   }
 
   private throwHttpException(error: unknown) {
