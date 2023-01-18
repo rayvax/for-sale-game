@@ -1,7 +1,7 @@
 export class CreateAccountDto {
-  login: string;
+  readonly login: string;
 }
 
-export class StartGameInRoomDto {
-  token: string;
+export class BaseLobbyDto {
+  readonly token: string;
 }

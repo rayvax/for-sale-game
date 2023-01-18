@@ -4,14 +4,15 @@ export class CreateGameDto {
 }
 
 export class PlayerDto {
-  readonly roomCode: string;
-  readonly login: string;
+  // readonly roomCode: string;
+  // readonly login: string;
+  readonly token: string;
 }
 
 export class BidCoinsDto extends PlayerDto {
-  bidAmmount: number;
+  readonly bidAmmount: number;
 }
 
 export class BidPropertyDto extends PlayerDto {
-  property: number;
+  readonly property: number;
 }

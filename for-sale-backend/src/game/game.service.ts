@@ -1,4 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
+import { LobbyService } from 'src/account/lobby.service';
 import { Game } from 'src/game/models/game.model';
 import { parseErrorMessage } from 'src/utils/errot';
 import { BidCoinsDto, BidPropertyDto, CreateGameDto, PlayerDto } from './game.dtos';
@@ -9,17 +16,18 @@ type GamesList = { [key: string]: Game };
 export class GameService {
   private static _gamesList: GamesList;
 
-  constructor() {
+  constructor(
+    @Inject(forwardRef(() => LobbyService)) private lobbyService: LobbyService,
+  ) {
     GameService._gamesList = {};
   }
 
   public createGame({ roomCode, logins }: CreateGameDto) {
     GameService._gamesList[roomCode] = new Game(logins);
-    console.log(GameService._gamesList);
   }
 
-  public getGameState({ roomCode, login }: PlayerDto) {
-    console.log(GameService._gamesList);
+  public getGameState({ token }: PlayerDto) {
+    const { roomCode, login } = this.lobbyService.getLobbyData(token);
     if (!GameService._gamesList[roomCode])
       throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
 
@@ -30,7 +38,8 @@ export class GameService {
     }
   }
 
-  public bidCoins({ roomCode, login, bidAmmount }: BidCoinsDto) {
+  public bidCoins({ token, bidAmmount }: BidCoinsDto) {
+    const { roomCode, login } = this.lobbyService.getLobbyData(token);
     try {
       GameService._gamesList[roomCode].bidCoins(login, bidAmmount);
     } catch (e) {
@@ -38,7 +47,8 @@ export class GameService {
     }
   }
 
-  public pass({ roomCode, login }: PlayerDto) {
+  public pass({ token }: PlayerDto) {
+    const { roomCode, login } = this.lobbyService.getLobbyData(token);
     try {
       GameService._gamesList[roomCode].pass(login);
     } catch (e) {
@@ -46,7 +56,8 @@ export class GameService {
     }
   }
 
-  public bidProperty({ roomCode, login, property }: BidPropertyDto) {
+  public bidProperty({ token, property }: BidPropertyDto) {
+    const { roomCode, login } = this.lobbyService.getLobbyData(token);
     try {
       GameService._gamesList[roomCode].bidProperty(login, property);
     } catch (e) {

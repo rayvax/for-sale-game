@@ -1,8 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Inject,
+} from '@nestjs/common';
 import { MAX_PLAYERS_COUNT, MIN_PLAYERS_COUNT } from 'src/constants/game';
 import { GameService } from 'src/game/game.service';
 import { getRandomPositiveNumber } from 'src/utils/random';
-import { CreateAccountDto, StartGameInRoomDto } from './lobby.dtos';
+import { CreateAccountDto, BaseLobbyDto } from './lobby.dtos';
 import { Account, Room } from './lobby.model';
 
 @Injectable()
@@ -10,7 +16,7 @@ export class LobbyService {
   private static _accounts: Account[];
   private static _rooms: Room[];
 
-  constructor(private gameService: GameService) {
+  constructor(@Inject(forwardRef(() => GameService)) private gameService: GameService) {
     LobbyService._accounts = [];
     LobbyService._rooms = [];
   }
@@ -23,17 +29,14 @@ export class LobbyService {
     const token = this.getUniqueAccountToken();
     LobbyService._accounts = [...LobbyService._accounts, { login, token }];
 
-    const roomCode = this.addAccountToRoom(
-      LobbyService._accounts[LobbyService._accounts.length - 1],
-    );
+    this.addAccountToRoom(LobbyService._accounts[LobbyService._accounts.length - 1]);
 
     return {
       token,
-      roomCode,
     };
   }
 
-  public startGame({ token }: StartGameInRoomDto) {
+  public startGame({ token }: BaseLobbyDto) {
     const account = this.getAccount(token);
     if (!account) {
       throw new HttpException(
@@ -64,6 +67,21 @@ export class LobbyService {
       logins: room.logins,
     });
     room.hasStartedGame = true;
+  }
+
+  public getRoomState(token: string) {
+    const { room } = this.verifyToken(token);
+
+    return { roomMembers: room.logins };
+  }
+
+  public getLobbyData(token: string) {
+    const { account, room } = this.verifyToken(token);
+
+    return {
+      login: account.login,
+      roomCode: room.code,
+    };
   }
 
   private getUniqueAccountToken() {
@@ -101,7 +119,7 @@ export class LobbyService {
         });
         targetRoom.hasStartedGame = true;
       }
-      return targetRoom.code;
+      return targetRoom;
     }
 
     //add to new room
@@ -110,10 +128,23 @@ export class LobbyService {
       logins: [account.login],
     };
     LobbyService._rooms = [...LobbyService._rooms, targetRoom];
-    return targetRoom.code;
+    return targetRoom;
   }
 
   private getAccount(token: string): Account | null {
     return LobbyService._accounts.find((account) => account.token === token) ?? null;
+  }
+
+  private verifyToken(token: string) {
+    const account = LobbyService._accounts.find((account) => account.token === token);
+    if (!account) throw new HttpException('Authorization error', HttpStatus.FORBIDDEN);
+
+    const room = LobbyService._rooms.find((room) => room.logins.includes(account.login));
+    if (!room) throw new HttpException('Room not found', HttpStatus.BAD_REQUEST);
+
+    return {
+      account,
+      room,
+    };
   }
 }
