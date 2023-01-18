@@ -1,4 +1,4 @@
-import { Body, Controller, Put, Post, Get } from '@nestjs/common';
+import { Body, Controller, Put, Post } from '@nestjs/common';
 import { CreateAccountDto, BaseLobbyDto } from './lobby.dtos';
 import { LobbyService } from './lobby.service';
 
