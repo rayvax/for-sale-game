@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { markDbError } from '../../../api/game/api';
 import { useGameAPI } from '../../../api/game/hooks';
 import { ErrorSpan } from '../../../components/common/Span';
 import { GamePhase } from '../../../models/game';
-import {
-  useGamePhase,
-  useHand,
-  usePlayerData,
-} from '../../../store/game/hooks';
+import { useGamePhase, useHand, usePlayerData } from '../../../store/game/hooks';
 import { getErrorMessage } from '../../../utils/error';
 
 const PlayerCoinsWrapper = styled.div`
@@ -18,6 +13,10 @@ const PlayerCoinsWrapper = styled.div`
   align-items: center;
 
   grid-area: coins;
+`;
+const PlayerCoinsHeader = styled.h2`
+  margin: 0;
+  padding: 0;
 `;
 
 export function PlayerCoins() {
@@ -47,7 +46,6 @@ export function PlayerCoins() {
         await gameApi.updateGameState();
       } catch (e) {
         setError(getErrorMessage(e));
-        markDbError(getErrorMessage(e));
       } finally {
         setIsLoading(false);
       }
@@ -74,22 +72,19 @@ export function PlayerCoins() {
   return (
     <PlayerCoinsWrapper>
       <div>Hand: {coins} Coins</div>
-      {!!player.bid && <div>Bid: {player.bid}</div>}
+      {gamePhase === GamePhase.BID_COINS && (
+        <div>{!!player.bid ? `Bid: ${player.bid}` : 'No bid'}</div>
+      )}
 
       {isCurrentTurn && gamePhase === GamePhase.BID_COINS && (
         <>
-          <h2>Your turn</h2>
           <form onSubmit={handleBid}>
             <input
               type='number'
               value={bidInput ? bidInput.toString() : ''}
               onChange={(e) => setBidInput(Number(e.target.value))}
             />
-            <button
-              type='submit'
-              onClick={handleBid}
-              disabled={!bidInput || isLoading}
-            >
+            <button type='submit' onClick={handleBid} disabled={!bidInput || isLoading}>
               Bid
             </button>
             <button type='button' onClick={handlePass} disabled={isLoading}>

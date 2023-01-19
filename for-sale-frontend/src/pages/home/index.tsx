@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { isTokenActive } from '../../api/account/api';
+import { createAccount } from '../../api/lobby/api';
 import { PrimaryButton } from '../../components/common/Button';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { Form, Label } from '../../components/common/Form';
+import { ErrorSpan } from '../../components/common/Span';
 import { colors } from '../../constants/theme';
 import { useAppDispatch } from '../../hooks/redux';
-import { clearAccountData } from '../../store/account/actions';
+import { setAccountData } from '../../store/account/actions';
 import { useToken } from '../../store/account/hooks';
-import { loginPath, registerPath, roomsDashboardPath } from '../../utils/paths';
+import { getErrorMessage } from '../../utils/error';
+import { roomPath, roomsDashboardPath } from '../../constants/paths';
 
 const HomePageContainer = styled.div`
   width: 100vw;
@@ -66,53 +68,56 @@ const HomePageHeading = styled.h1`
   margin: 0 0 2rem;
 `;
 
-const HomePageButton = styled(PrimaryButton)`
-  font-size: 30px;
-  padding: 1rem 1.5rem;
-`;
-
 function HomePage() {
   const navigate = useNavigate();
   const token = useToken();
   const dispatch = useAppDispatch();
-  const [isLoading, setIsLoading] = useState(true);
+
+  const [inputName, setInputName] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) {
-      setIsLoading(false);
-      return;
+    if (!token) return;
+
+    navigate(roomPath);
+  }, [token, navigate]);
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+
+    try {
+      const token = await createAccount(inputName);
+
+      setError(null);
+      dispatch(setAccountData({ token, login: inputName }));
+      navigate(roomsDashboardPath);
+    } catch (e) {
+      console.error(e);
+      setError(getErrorMessage(e));
     }
-
-    (async function () {
-      const isActive = await isTokenActive(token);
-
-      if (!isActive) dispatch(clearAccountData());
-
-      setIsLoading(false);
-    })();
-  }, [token]);
+  }
 
   return (
     <HomePageContainer>
       <HomePageWrapper>
         <HomePageHeading>For sale!</HomePageHeading>
 
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : token ? (
-          <HomePageButton onClick={() => navigate(roomsDashboardPath)}>
-            Show rooms
-          </HomePageButton>
-        ) : (
-          <>
-            <HomePageButton onClick={() => navigate(loginPath)}>
-              Login
-            </HomePageButton>
-            <HomePageButton onClick={() => navigate(registerPath)}>
-              Register
-            </HomePageButton>
-          </>
-        )}
+        <Form onSubmit={handleSubmit}>
+          <Label>
+            Enter name:
+            <input
+              type={'text'}
+              id='login'
+              name='login'
+              value={inputName}
+              onChange={(e) => setInputName(e.target.value)}
+            />
+          </Label>
+          {error && <ErrorSpan>{error}</ErrorSpan>}
+          <PrimaryButton type='submit' disabled={!inputName}>
+            Roll in!
+          </PrimaryButton>
+        </Form>
       </HomePageWrapper>
     </HomePageContainer>
   );

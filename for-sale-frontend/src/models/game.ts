@@ -16,7 +16,7 @@ export type Hand = {
   coins: number;
   properties: number[];
   money: number[];
-  bidProperty?: number;
+  bidProperty: number | null;
 };
 
 export type Table = {
@@ -25,7 +25,7 @@ export type Table = {
 };
 
 export type FinalRating = {
-  nickaname: string;
+  nickname: string;
   score: number;
 };
 

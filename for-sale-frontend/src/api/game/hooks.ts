@@ -3,37 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/redux';
 import { useToken } from '../../store/account/hooks';
 import { setGameStoreState } from '../../store/game/actions';
-import { useRoomCode } from '../../store/room/hooks';
 import { isAuthorizationError } from '../../utils/error';
-import { accountPagePath } from '../../utils/paths';
+import { homePagePath } from '../../constants/paths';
 import { bidCoins, bidProperty, getGameState, pass, startGame } from './api';
 
 export function useGameAPI() {
   const token = useToken();
-  const roomCode = useRoomCode();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   return useMemo(() => {
-    if (!token || !roomCode) return null;
+    if (!token) return null;
 
     return {
       updateGameState: async () => {
         try {
-          const gameState = await getGameState(token, roomCode);
+          const gameState = await getGameState(token);
           dispatch(setGameStoreState(gameState));
         } catch (e) {
           console.error(e);
 
-          if (isAuthorizationError(e)) navigate(accountPagePath);
+          if (isAuthorizationError(e)) navigate(homePagePath);
         }
       },
-      startGame: () => startGame(token, roomCode),
-      getGameState: () => getGameState(token, roomCode),
-      pass: () => pass(token, roomCode),
-      bidCoins: (bid: number) => bidCoins(token, roomCode, bid.toString()),
-      bidProperty: (property: number) =>
-        bidProperty(token, roomCode, property.toString()),
+      startGame: () => startGame(token),
+      getGameState: () => getGameState(token),
+      pass: () => pass(token),
+      bidCoins: (bid: number) => bidCoins(token, bid.toString()),
+      bidProperty: (property: number) => bidProperty(token, property.toString()),
     };
-  }, [token, roomCode, dispatch, navigate]);
+  }, [token, dispatch, navigate]);
 }

@@ -1,19 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { markDbError } from '../../api/game/api';
 import { useGameAPI } from '../../api/game/hooks';
-import { leaveRoom } from '../../api/rooms/api';
-import { GamePhase } from '../../models/game';
+import { useAppDispatch } from '../../hooks/redux';
+import { clearAccountData } from '../../store/account/actions';
 import { useToken } from '../../store/account/hooks';
-import {
-  useGamePhase,
-  useGameStoreState,
-  useUpdateTurnEndState,
-} from '../../store/game/hooks';
-import { useRoomCode } from '../../store/room/hooks';
-import { getErrorMessage } from '../../utils/error';
-import { roomsDashboardPath } from '../../utils/paths';
+import { clearGameStoreState } from '../../store/game/actions';
+import { useGameStoreState } from '../../store/game/hooks';
+import { homePagePath } from '../../constants/paths';
 import { GameTable } from './GameTable';
 import { OpponentsList } from './opponents/OpponentsList';
 import { PlayerState } from './PlayerState';
@@ -31,31 +25,27 @@ const CornerButtonsList = styled.button`
 
 export function GamePage() {
   const gameStoreState = useGameStoreState();
-  const gamePhase = useGamePhase();
   const token = useToken();
-  const roomCode = useRoomCode();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
 
-  useUpdatedGameState(roomCode);
+  useUpdatedGameState();
 
   function handleLeaveGame() {
-    if (!token || !roomCode) return;
+    if (!token) return;
 
     (async function () {
       setIsLoading(true);
       try {
-        await leaveRoom(token, roomCode);
-        navigate(roomsDashboardPath);
+        dispatch(clearAccountData());
+        dispatch(clearGameStoreState());
+        navigate(homePagePath);
       } finally {
         setIsLoading(false);
       }
     })();
-  }
-
-  function handleGoToRoomsList() {
-    navigate(roomsDashboardPath);
   }
 
   if (!gameStoreState) return null;
@@ -68,44 +58,27 @@ export function GamePage() {
       <GameTable />
       <OpponentsList players={players} />
       <PlayerState />
-      {gamePhase !== GamePhase.END ? (
-        <CornerButtonsList
-          type='button'
-          onClick={handleLeaveGame}
-          disabled={isLoading}
-        >
-          Leave game
-        </CornerButtonsList>
-      ) : (
-        <CornerButtonsList
-          type='button'
-          onClick={handleGoToRoomsList}
-          disabled={isLoading}
-        >
-          Go to rooms list
-        </CornerButtonsList>
-      )}
+      <CornerButtonsList type='button' onClick={handleLeaveGame} disabled={isLoading}>
+        Leave game
+      </CornerButtonsList>
     </GamePageWrapper>
   );
 }
 
-function useUpdatedGameState(code: string | null) {
+function useUpdatedGameState() {
   const gameApi = useGameAPI();
-  const stateRoomCode = useRoomCode();
-  useUpdateTurnEndState();
 
   //update game state
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     async function updateGameStateInTimeout() {
-      if (!code || code !== stateRoomCode || !gameApi) return;
+      if (!gameApi) return;
 
       try {
         await gameApi!.updateGameState();
         // console.log('game state updated');
       } catch (e) {
         console.error(e);
-        markDbError(getErrorMessage(e));
       }
 
       if (gameApi) {
@@ -116,5 +89,5 @@ function useUpdatedGameState(code: string | null) {
     updateGameStateInTimeout();
 
     return () => clearTimeout(timeout);
-  }, [gameApi, code, stateRoomCode]);
+  }, [gameApi]);
 }

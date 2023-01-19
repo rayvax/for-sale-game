@@ -15,8 +15,8 @@ export function FinalRatingTable({ finalRatings }: FinalRatingTableProps) {
       </thead>
       <tbody>
         {finalRatings.map((rating, i) => (
-          <tr key={`${rating.nickaname}-${i}`}>
-            <td>{rating.nickaname}</td>
+          <tr key={`${rating.nickname}-${i}`}>
+            <td>{rating.nickname}</td>
             <td>{rating.score}</td>
           </tr>
         ))}

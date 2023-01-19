@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '../../components/common/Button';
-import { homePagePath } from '../../utils/paths';
+import { homePagePath } from '../../constants/paths';
 
 function NotFound() {
   const navigate = useNavigate();

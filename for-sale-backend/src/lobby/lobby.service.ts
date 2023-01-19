@@ -72,7 +72,7 @@ export class LobbyService {
   public getRoomState(token: string) {
     const { room } = this.verifyToken(token);
 
-    return { roomMembers: room.logins };
+    return { roomMembers: room.logins, hasGameStarted: !!room.hasStartedGame };
   }
 
   public getLobbyData(token: string) {

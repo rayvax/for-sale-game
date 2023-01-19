@@ -10,7 +10,7 @@ export class PlayerDto {
 }
 
 export class BidCoinsDto extends PlayerDto {
-  readonly bidAmmount: number;
+  readonly bidAmount: number;
 }
 
 export class BidPropertyDto extends PlayerDto {

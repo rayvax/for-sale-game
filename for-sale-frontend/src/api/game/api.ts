@@ -1,4 +1,4 @@
-import { runProcedure } from '..';
+import { requests } from '..';
 import {
   FinalRating,
   GamePhase,
@@ -9,117 +9,88 @@ import {
 } from '../../models/game';
 import { GameStoreState } from '../../store/game/reducer';
 
-export function startGame(token: string, roomCode: string): Promise<void> {
-  return runProcedure<void>('startGame', {
-    param1: token,
-    param2: roomCode,
-  });
+export function startGame(token: string): Promise<void> {
+  return requests.put('/lobby/start', { token });
 }
 
+type GameStatePlayer = {
+  login: string;
+  hasPassed: boolean;
+  biddedCoinsCount: number;
+  last: { property?: number; money?: number };
+};
 type GameStateResponse = {
-  RESULTS: [
-    {
-      nickname: [string];
-      orderNumber: [number];
-      passed: [number];
-      bid: [number];
-      lastBidProperty: [number | null];
-      lastBidMoney: [number | null];
-      turnEndsIn: [number | null];
-    },
-    {
-      nickname: string[];
-      orderNumber: number[];
-      passed: number[];
-      bid: number[];
-      lastBidProperty: (number | null)[];
-      lastBidMoney: (number | null)[];
-      turnEndsIn: (number | null)[];
-    },
-    {
-      handProperty: number[];
-    },
-    {
-      handCoins: [number];
-    },
-    {
-      bidProperty: [number];
-    },
-    {
-      handValue: number[];
-    },
-    {
-      tableProperty?: number[];
-      tableMoney?: number[];
-      nickname?: string[];
-      score?: number[];
-    },
-    {},
-  ];
+  myLogin: string;
+
+  currentPlayer: string; //login of current turn player
+  hand: {
+    coinsCount: number;
+    properties: number[];
+    money: number[];
+    biddedProperty: number | null;
+  };
+  players: GameStatePlayer[];
+  table: { properties: number[]; money: number[] };
+
+  ratedPlayers?: {
+    login: string;
+    pointsCount: number;
+    handCoinsCount: number;
+    money: number[];
+  }[];
 };
 
 function toGameStoreState(resp: GameStateResponse): GameStoreState {
-  const { nickname: winnerNicknames, score } = resp.RESULTS[6];
-
-  const playerResp = resp.RESULTS[0];
+  const playerIndex = resp.players.findIndex((p) => p.login === resp.myLogin);
   const player: PlayerData = {
-    nickname: playerResp.nickname[0],
-    orderNumber: playerResp.orderNumber[0],
-    passed: playerResp.passed[0] === 1,
-    bid: playerResp.bid[0],
-    lastBidProperty: playerResp.lastBidProperty[0] ?? undefined,
-    lastBidMoney: playerResp.lastBidMoney[0] ?? undefined,
-    isCurrentTurn: playerResp.turnEndsIn[0] !== null,
+    nickname: resp.players[playerIndex].login,
+    orderNumber: playerIndex + 1,
+    passed: resp.players[playerIndex].hasPassed,
+    bid: resp.players[playerIndex].biddedCoinsCount,
+    lastBidProperty: resp.players[playerIndex].last.property,
+    lastBidMoney: resp.players[playerIndex].last.money,
+    isCurrentTurn: resp.myLogin === resp.currentPlayer,
   };
 
-  const {
-    nickname,
-    orderNumber,
-    passed,
-    bid,
-    lastBidProperty,
-    lastBidMoney,
-    turnEndsIn: opponentTurnEndsIn,
-  } = resp.RESULTS[1];
-  const opponents: OpponentData[] = nickname.map((nickname, i) => ({
-    nickname,
-    orderNumber: orderNumber[i],
-    passed: passed[i] === 1,
-    bid: bid[i],
-    lastBidProperty: lastBidProperty[i] ?? undefined,
-    lastBidMoney: lastBidMoney[i] ?? undefined,
-    isCurrentTurn: opponentTurnEndsIn[i] !== null,
+  const opponentsResponse = [...resp.players].map((player, i) => ({
+    ...player,
+    order: i + 1,
+  }));
+  opponentsResponse.splice(playerIndex, 1);
+  const opponents: OpponentData[] = opponentsResponse.map((player, i) => ({
+    nickname: player.login,
+    orderNumber: player.order,
+    passed: player.hasPassed,
+    bid: player.biddedCoinsCount,
+    lastBidProperty: player.last.property,
+    lastBidMoney: player.last.money,
+    isCurrentTurn: player.login === resp.currentPlayer,
   }));
 
   const hand: Hand = {
-    properties: resp.RESULTS[2].handProperty,
-    coins: resp.RESULTS[3].handCoins[0],
-    bidProperty: resp.RESULTS[4].bidProperty[0],
-    money: resp.RESULTS[5].handValue,
+    properties: resp.hand.properties,
+    coins: resp.hand.coinsCount,
+    bidProperty: resp.hand.biddedProperty,
+    money: resp.hand.money,
   };
 
-  const table: Table = {
-    properties: resp.RESULTS[6].tableProperty,
-    money: resp.RESULTS[6].tableMoney,
-  };
+  const table: Table = resp.table;
 
   let gamePhase: GamePhase;
   if (table.properties) gamePhase = GamePhase.BID_COINS;
   else if (table.money) gamePhase = GamePhase.BID_PROPERTY;
   else gamePhase = GamePhase.END;
 
-  const finalRatings: FinalRating[] | undefined = winnerNicknames
-    ? winnerNicknames.map((nickaname, i) => ({
-        nickaname,
-        score: score ? score[i] : 0,
+  const finalRatings: FinalRating[] | undefined = resp.ratedPlayers
+    ? resp.ratedPlayers.map((player) => ({
+        nickname: player.login,
+        score: player.pointsCount,
       }))
     : undefined;
 
   return {
     player,
     opponents,
-    turnEndsIn:
-      opponentTurnEndsIn.find((p) => p !== null) ?? playerResp.turnEndsIn[0],
     hand,
     table,
     gamePhase,
@@ -127,48 +98,20 @@ function toGameStoreState(resp: GameStateResponse): GameStoreState {
   };
 }
 
-export async function getGameState(
-  token: string,
-  roomCode: string,
-): Promise<GameStoreState> {
-  const resp = await runProcedure<GameStateResponse>('getGameState', {
-    param1: token,
-    param2: roomCode,
-  });
+export async function getGameState(token: string): Promise<GameStoreState> {
+  const resp = await requests.post<GameStateResponse>('/game', { token });
 
   return toGameStoreState(resp);
 }
 
-export async function pass(token: string, roomCode: string): Promise<void> {
-  return runProcedure<void>('pass', { param1: token, param2: roomCode });
+export async function pass(token: string): Promise<void> {
+  return requests.post<void>('/game/pass', { token });
 }
 
-export async function bidCoins(
-  token: string,
-  roomCode: string,
-  bid: string,
-): Promise<void> {
-  return runProcedure<void>('bidCoins', {
-    param1: token,
-    param2: roomCode,
-    param3: bid,
-  });
+export async function bidCoins(token: string, bid: string): Promise<void> {
+  return requests.post<void>('/game/bid-coins', { token, bidAmount: Number(bid) });
 }
 
-export async function bidProperty(
-  token: string,
-  roomCode: string,
-  property: string,
-): Promise<void> {
-  return runProcedure<void>('bidProperty', {
-    param1: token,
-    param2: roomCode,
-    param3: property,
-  });
-}
-
-export async function markDbError(description: string) {
-  return runProcedure<void>('markError', {
-    param1: description,
-  });
+export async function bidProperty(token: string, property: string): Promise<void> {
+  return requests.post<void>('/game/bid-property', { token, property: Number(property) });
 }

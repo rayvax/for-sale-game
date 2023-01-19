@@ -2,7 +2,6 @@ import { Check, X } from 'react-feather';
 import styled from 'styled-components';
 import { colors } from '../../../constants/theme';
 import { OpponentData } from '../../../models/game';
-import { useTurnEndsIn } from '../../../store/game/hooks';
 
 const OpponentWrapper = styled.li<{ needHightlight: boolean }>`
   position: relative;
@@ -56,17 +55,8 @@ interface OppenentProps {
 }
 
 export function OpponentItem({ opponent }: OppenentProps) {
-  const turnEndsIn = useTurnEndsIn();
-
   return (
     <OpponentWrapper needHightlight={opponent.isCurrentTurn}>
-      <OutsideWrapper>
-        {opponent.isCurrentTurn && (
-          <CurrentTurnIndicator>
-            Turn ends in: {turnEndsIn}
-          </CurrentTurnIndicator>
-        )}
-      </OutsideWrapper>
       <OpponentInfoRow>
         <OpponentNickname>
           {opponent.orderNumber}. {opponent.nickname || 'Bot'}

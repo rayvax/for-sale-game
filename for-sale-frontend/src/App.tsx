@@ -1,15 +1,9 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import AccountPage from './pages/account';
 import NotFound from './pages/errors/NotFound';
 import { GamePage } from './pages/game';
 import HomePage from './pages/home';
-import RoomsPage from './pages/rooms';
-import {
-  accountPagePath,
-  gamePath,
-  homePagePath,
-  roomPath,
-} from './utils/paths';
+import { RoomPage } from './pages/room';
+import { gamePath, homePagePath, roomPath } from './constants/paths';
 
 function App() {
   return (
@@ -17,9 +11,8 @@ function App() {
       <HashRouter>
         <Routes>
           <Route path={homePagePath} element={<HomePage />} />
-          <Route path={`${accountPagePath}/*`} element={<AccountPage />} />
-          <Route path={roomPath('*')} element={<RoomsPage />} />
-          <Route path={gamePath(':code')} element={<GamePage />} />
+          <Route path={roomPath} element={<RoomPage />} />
+          <Route path={gamePath} element={<GamePage />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </HashRouter>

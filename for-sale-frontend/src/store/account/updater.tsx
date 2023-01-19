@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { authorizationErrorMessage } from '../../constants/database';
 import { useAppDispatch } from '../../hooks/redux';
-import { homePagePath } from '../../utils/paths';
+import { homePagePath } from '../../constants/paths';
 import { clearStoreError } from '../error/actions';
 import { useStoreError } from '../error/hooks';
 import { clearAccountData } from './actions';

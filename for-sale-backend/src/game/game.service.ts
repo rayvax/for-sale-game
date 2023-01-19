@@ -5,7 +5,7 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { LobbyService } from 'src/account/lobby.service';
+import { LobbyService } from 'src/lobby/lobby.service';
 import { Game } from 'src/game/models/game.model';
 import { parseErrorMessage } from 'src/utils/errot';
 import { BidCoinsDto, BidPropertyDto, CreateGameDto, PlayerDto } from './game.dtos';
@@ -32,16 +32,17 @@ export class GameService {
       throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
 
     try {
-      return GameService._gamesList[roomCode].getGameState(login);
+      const resp = GameService._gamesList[roomCode].getGameState(login);
+      return { myLogin: login, ...resp };
     } catch (e) {
       this.throwHttpException(e);
     }
   }
 
-  public bidCoins({ token, bidAmmount }: BidCoinsDto) {
+  public bidCoins({ token, bidAmount }: BidCoinsDto) {
     const { roomCode, login } = this.lobbyService.getLobbyData(token);
     try {
-      GameService._gamesList[roomCode].bidCoins(login, bidAmmount);
+      GameService._gamesList[roomCode].bidCoins(login, bidAmount);
     } catch (e) {
       this.throwHttpException(e);
     }

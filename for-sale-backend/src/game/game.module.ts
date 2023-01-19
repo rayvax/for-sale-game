@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { GameService } from './game.service';
 import { GameController } from './game.controller';
-import { LobbyModule } from 'src/account/lobby.module';
+import { LobbyModule } from 'src/lobby/lobby.module';
 
 @Module({
   controllers: [GameController],

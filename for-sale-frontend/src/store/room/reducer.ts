@@ -1,40 +1,21 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { RoomState } from '../../models/room';
-import {
-  clearRoomState,
-  saveRoomState,
-  setRoomCode,
-  updateRoomState,
-} from './actions';
+import { clearRoomState, updateRoomState } from './actions';
 
 type RoomStoreState = {
-  roomState: RoomState | null;
-  code: string | null;
+  hasGameStarted: boolean;
+  members: string[];
 };
 
-const initialState: RoomStoreState = {
-  roomState: null,
-  code: null,
-};
+const initialState: RoomStoreState = { hasGameStarted: false, members: [] };
 
-export default createReducer(initialState, (builder) =>
+export default createReducer(initialState as RoomStoreState, (builder) =>
   builder
-    .addCase(saveRoomState, (state, { payload }) => {
-      const { code, roomState } = payload;
-
-      state.code = code;
-      state.roomState = roomState;
-    })
-    .addCase(setRoomCode, (state, { payload }) => {
-      const { code } = payload;
-      state.code = code;
-    })
     .addCase(updateRoomState, (state, { payload }) => {
       const { roomState } = payload;
-      state.roomState = roomState;
+      state.members = roomState.members;
+      state.hasGameStarted = roomState.hasGameStarted;
     })
     .addCase(clearRoomState, (state) => {
-      state.code = null;
-      state.roomState = null;
+      state = initialState;
     }),
 );

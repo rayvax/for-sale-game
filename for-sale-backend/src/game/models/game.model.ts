@@ -25,7 +25,7 @@ export class Game {
 
       ratedPlayers.sort((a, b) => b.pointsCount - a.pointsCount);
 
-      return ratedPlayers;
+      return { ratedPlayers };
     }
 
     const playerIndex = this._players.findIndex((p) => p.login === login);
@@ -41,7 +41,7 @@ export class Game {
     };
   }
 
-  public bidCoins(login: string, newBidAmmount: number) {
+  public bidCoins(login: string, newBidAmount: number) {
     if (this.gamePhase !== 'BID_COINS')
       throw new HttpException(
         'This action is impossible in current game phase',
@@ -51,13 +51,13 @@ export class Game {
     if (!this.isCurrentTurnPlayer(login))
       throw new HttpException('It is not your turn', HttpStatus.BAD_REQUEST);
 
-    if (this._players.some((p) => p.biddedCoinsCount >= newBidAmmount))
+    if (this._players.some((p) => p.biddedCoinsCount >= newBidAmount))
       throw new HttpException(
         'Your bid should become the biggest',
         HttpStatus.BAD_REQUEST,
       );
 
-    this.currentPlayer.bidCoins(newBidAmmount);
+    this.currentPlayer.bidCoins(newBidAmount);
     this.startNextTurn();
   }
 
