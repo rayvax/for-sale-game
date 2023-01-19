@@ -8,10 +8,12 @@ const OpponentWrapper = styled.li<{ needHightlight: boolean }>`
   display: flex;
   flex-direction: column;
 
-  max-width: 500px;
+  min-width: 170px;
+  max-width: 300px;
 
   background-color: ${colors.bg1};
   border: 3px solid ${colors.bg2};
+  border-radius: 20px;
 
   ${({ needHightlight }) =>
     needHightlight && `box-shadow: 0 0 10px 5px ${colors.primary2};`}
@@ -20,7 +22,7 @@ const OpponentWrapper = styled.li<{ needHightlight: boolean }>`
 const OpponentInfoRow = styled.div`
   width: 100%;
   box-sizing: border-box;
-  padding: 0.5rem 0.1rem;
+  padding: 1rem 0.75rem;
 
   display: flex;
 
@@ -31,6 +33,13 @@ const OpponentInfoRow = styled.div`
 
 const OpponentNickname = styled.h3`
   margin: 0;
+
+  width: 100%;
+  text-align: center;
+`;
+
+const OpponentInfoRowDD = styled.dd`
+  margin-left: auto;
 `;
 
 interface OppenentProps {
@@ -47,11 +56,11 @@ export function OpponentItem({ opponent }: OppenentProps) {
       </OpponentInfoRow>
       <OpponentInfoRow>
         <dt>Passed</dt>
-        <dd>{opponent.passed ? <Check /> : <X />}</dd>
+        <OpponentInfoRowDD>{opponent.passed ? <Check /> : <X />}</OpponentInfoRowDD>
       </OpponentInfoRow>
       <OpponentInfoRow>
         <dt>Bid</dt>
-        <dd>{opponent.bid}</dd>
+        <OpponentInfoRowDD>{opponent.bid}</OpponentInfoRowDD>
       </OpponentInfoRow>
       {!!opponent.lastBidProperty && opponent.lastBidMoney !== undefined && (
         <>

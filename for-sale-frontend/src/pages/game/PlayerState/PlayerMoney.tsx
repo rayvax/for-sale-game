@@ -6,7 +6,7 @@ import { MoneyCard } from '../cards/MoneyCard';
 const StyledPlayerMoneyList = styled.ul<{ cardCount: number }>`
   list-style: none;
   margin: 0;
-  padding: 1rem 0 1rem 3rem;
+  padding: 1rem 1rem 1rem 3rem;
 
   display: grid;
   grid-template-columns: repeat(${({ cardCount }) => cardCount}, 1fr);
@@ -21,6 +21,10 @@ const StyledPlayerMoneyList = styled.ul<{ cardCount: number }>`
   }
 `;
 
+const StyledPlayerMoneyItem = styled.li`
+  margin: auto 0;
+`;
+
 export function PlayerMoneyList() {
   const hand = useHand();
 
@@ -31,9 +35,9 @@ export function PlayerMoneyList() {
   return (
     <StyledPlayerMoneyList cardCount={money.length}>
       {money.map((m, i) => (
-        <li key={`hand-money-${i}`}>
+        <StyledPlayerMoneyItem key={`hand-money-${i}`}>
           <MoneyCard value={m} />
-        </li>
+        </StyledPlayerMoneyItem>
       ))}
     </StyledPlayerMoneyList>
   );

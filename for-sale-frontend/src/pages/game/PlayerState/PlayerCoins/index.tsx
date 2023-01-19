@@ -10,17 +10,22 @@ import { BidInput } from './BidInput';
 import { toast } from 'react-toastify';
 
 const PlayerCoinsWrapper = styled.div`
-  padding: 1rem 2rem;
+  grid-area: coins;
+
+  min-height: 230px;
+  box-sizing: border-box;
+
+  padding: 1.5rem 2rem;
 
   display: flex;
   flex-direction: column;
-
   align-items: center;
-
-  grid-area: coins;
   gap: 1rem;
 
   background-color: ${colors.bg1};
+  border: 5px solid ${colors.bg2};
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
 `;
 
 const BidForm = styled.form`

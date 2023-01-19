@@ -1,21 +1,21 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { propertyCardWidth } from '../../../../constants/static-data';
+import { colors } from '../../../../constants/theme';
 import { GamePhase } from '../../../../models/game';
 import { useGamePhase, useHand, usePlayerData } from '../../../../store/game/hooks';
 import { PlayerPropertyCard } from './PlayerProperty';
 
 const PlayerPropertiesStyledList = styled.ul<{ cardCount: number }>`
+  grid-area: prop;
+
   display: grid;
   grid-template-columns: repeat(${({ cardCount }) => cardCount}, 1fr);
   grid-template-rows: auto;
 
-  padding: 1rem 3rem 1rem 0;
-
-  grid-area: prop;
-
   margin: 0;
   padding: 0;
+  padding: 1rem 3rem 1rem 1rem;
   list-style: none;
 
   width: calc(100% - ${propertyCardWidth}rem);
@@ -23,6 +23,10 @@ const PlayerPropertiesStyledList = styled.ul<{ cardCount: number }>`
   & li {
     min-width: 0;
   }
+`;
+
+const PlayerPropertiesItem = styled.li`
+  margin: auto 0;
 `;
 
 export function PlayerPropertiesList() {
@@ -40,14 +44,14 @@ export function PlayerPropertiesList() {
   return (
     <PlayerPropertiesStyledList cardCount={properties.length}>
       {properties.map((property) => (
-        <li key={`${property}-hand-property`}>
+        <PlayerPropertiesItem key={`${property}-hand-property`}>
           <PlayerPropertyCard
             property={property}
             canBid={canBid}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
           />
-        </li>
+        </PlayerPropertiesItem>
       ))}
     </PlayerPropertiesStyledList>
   );

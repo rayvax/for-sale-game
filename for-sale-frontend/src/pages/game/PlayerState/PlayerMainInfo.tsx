@@ -8,6 +8,13 @@ const PlayerTurnInfoWrapper = styled.div<{ isCurrentTurn: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+
+  min-width: 150;
+
+  border-bottom: 5px solid ${colors.bg2};
+  margin-bottom: -5px;
+  padding-bottom: 0.5rem;
 
   ${({ isCurrentTurn }) =>
     isCurrentTurn &&
@@ -16,7 +23,7 @@ const PlayerTurnInfoWrapper = styled.div<{ isCurrentTurn: boolean }>`
     0deg,
     ${colors.primary2} 0%,
     rgba(0, 0, 0, 0) 100%
-  );`}
+  );`};
 `;
 
 const Nickname = styled.h3`
