@@ -4,7 +4,7 @@ export const colors = {
   bg2: '#AD8E70',
   primary: '#FF6E31',
   primary2: '#fbcb64',
-  secondary: '#EDF4E1',
+  secondary: '#b3d47b',
   text: '#243763',
   textAlter: '#fefefe',
   error: '#BC4749',

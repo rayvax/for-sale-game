@@ -12,8 +12,6 @@ const PlayerWrapper = styled.div`
   left: 50%;
   transform: translate(-50%, 0);
 
-  padding: 0 3rem 1rem;
-
   display: grid;
   grid-template-areas: 'turn turn turn' 'money coins prop';
 

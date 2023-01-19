@@ -9,8 +9,6 @@ const PlayerTurnInfoWrapper = styled.div<{ isCurrentTurn: boolean }>`
   flex-direction: column;
   align-items: center;
 
-  margin-bottom: 1rem;
-
   ${({ isCurrentTurn }) =>
     isCurrentTurn &&
     `

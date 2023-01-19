@@ -6,7 +6,7 @@ import { MoneyCard } from '../cards/MoneyCard';
 const StyledPlayerMoneyList = styled.ul<{ cardCount: number }>`
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 1rem 0 1rem 3rem;
 
   display: grid;
   grid-template-columns: repeat(${({ cardCount }) => cardCount}, 1fr);

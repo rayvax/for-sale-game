@@ -8,6 +8,46 @@ import { clearRoomState, updateRoomState } from '../../store/room/actions';
 import { useRoomState } from '../../store/room/hooks';
 import { gamePath, homePagePath } from '../../constants/paths';
 import { clearAccountData } from '../../store/account/actions';
+import { isAuthorizationError } from '../../utils/error';
+import { PrimaryButton } from '../../components/common/Button';
+import styled from 'styled-components';
+import { colors } from '../../constants/theme';
+
+const RoomWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+
+  padding-top: 1rem;
+`;
+
+const RoomH1 = styled.h1`
+  margin: 0;
+`;
+
+const RoomMembersSection = styled.div`
+  padding: 1rem;
+
+  background-color: ${colors.bg1};
+  border: 3px solid ${colors.bg2};
+  border-radius: 20px;
+`;
+
+const RoomH2 = styled.h2`
+  margin: 0;
+`;
+
+const PlayersList = styled.ul`
+  margin: 0;
+  padding: 0;
+  list-style: none;
+`;
+
+const ButtonsList = styled.div`
+  display: flex;
+  gap: 2rem;
+`;
 
 export function RoomPage() {
   const dispatch = useAppDispatch();
@@ -51,29 +91,34 @@ export function RoomPage() {
   const canStartGame = members.length >= 3;
 
   return (
-    <div>
-      <h1>Room</h1>
-      <h2>Room members: </h2>
-      <ul>
-        {members.map((member) => (
-          <li key={`room-member-${member}`}>{member}</li>
-        ))}
-      </ul>
-      <button onClick={() => handleLeaveRoom()} disabled={isLoading}>
-        Leave
-      </button>
+    <RoomWrapper>
+      <RoomH1>Room</RoomH1>
+      <RoomMembersSection>
+        <RoomH2>Room members:</RoomH2>
+        <PlayersList>
+          {members.map((member) => (
+            <li key={`room-member-${member}`}>{member}</li>
+          ))}
+        </PlayersList>
+      </RoomMembersSection>
+      <ButtonsList>
+        <PrimaryButton onClick={() => handleLeaveRoom()} disabled={isLoading}>
+          Leave
+        </PrimaryButton>
 
-      <button onClick={handleStartGame} disabled={!canStartGame || isLoading}>
-        Start game
-      </button>
+        <PrimaryButton onClick={handleStartGame} disabled={!canStartGame || isLoading}>
+          Start game
+        </PrimaryButton>
+      </ButtonsList>
       {!canStartGame && <span>Should be at least 3 people to start the game</span>}
-    </div>
+    </RoomWrapper>
   );
 }
 
 function useUpdateRoom() {
   const dispatch = useAppDispatch();
   const token = useToken();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) return;
@@ -84,6 +129,11 @@ function useUpdateRoom() {
         dispatch(updateRoomState({ roomState }));
       } catch (e) {
         console.error(e);
+        if (isAuthorizationError(e)) {
+          dispatch(clearAccountData());
+          dispatch(clearRoomState());
+          navigate(homePagePath);
+        }
       }
     }
 
@@ -92,7 +142,7 @@ function useUpdateRoom() {
     const updateRoomStateInterval = setInterval(() => updateRoom(token), 5000);
 
     return () => clearInterval(updateRoomStateInterval);
-  }, [token, dispatch]);
+  }, [token, dispatch, navigate]);
 }
 
 function useNavigateToGame(hasGameStarted: boolean) {

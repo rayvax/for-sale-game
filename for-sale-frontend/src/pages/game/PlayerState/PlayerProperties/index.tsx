@@ -2,17 +2,15 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { propertyCardWidth } from '../../../../constants/static-data';
 import { GamePhase } from '../../../../models/game';
-import {
-  useGamePhase,
-  useHand,
-  usePlayerData,
-} from '../../../../store/game/hooks';
+import { useGamePhase, useHand, usePlayerData } from '../../../../store/game/hooks';
 import { PlayerPropertyCard } from './PlayerProperty';
 
 const PlayerPropertiesStyledList = styled.ul<{ cardCount: number }>`
   display: grid;
   grid-template-columns: repeat(${({ cardCount }) => cardCount}, 1fr);
   grid-template-rows: auto;
+
+  padding: 1rem 3rem 1rem 0;
 
   grid-area: prop;
 

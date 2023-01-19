@@ -11,6 +11,7 @@ import { setAccountData } from '../../store/account/actions';
 import { useToken } from '../../store/account/hooks';
 import { getErrorMessage } from '../../utils/error';
 import { roomPath, roomsDashboardPath } from '../../constants/paths';
+import { toast } from 'react-toastify';
 
 const HomePageContainer = styled.div`
   width: 100vw;
@@ -66,6 +67,8 @@ const HomePageWrapper = styled.div`
 const HomePageHeading = styled.h1`
   font-size: 75px;
   margin: 0 0 2rem;
+
+  font-style: italic;
 `;
 
 function HomePage() {
@@ -74,7 +77,6 @@ function HomePage() {
   const dispatch = useAppDispatch();
 
   const [inputName, setInputName] = useState('');
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -88,12 +90,11 @@ function HomePage() {
     try {
       const token = await createAccount(inputName);
 
-      setError(null);
       dispatch(setAccountData({ token, login: inputName }));
       navigate(roomsDashboardPath);
     } catch (e) {
       console.error(e);
-      setError(getErrorMessage(e));
+      toast.error(getErrorMessage(e));
     }
   }
 
@@ -113,7 +114,6 @@ function HomePage() {
               onChange={(e) => setInputName(e.target.value)}
             />
           </Label>
-          {error && <ErrorSpan>{error}</ErrorSpan>}
           <PrimaryButton type='submit' disabled={!inputName}>
             Roll in!
           </PrimaryButton>

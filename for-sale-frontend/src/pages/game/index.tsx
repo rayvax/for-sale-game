@@ -11,13 +11,14 @@ import { homePagePath } from '../../constants/paths';
 import { GameTable } from './GameTable';
 import { OpponentsList } from './opponents/OpponentsList';
 import { PlayerState } from './PlayerState';
+import { SecondaryButton } from '../../components/common/Button';
 
 const GamePageWrapper = styled.div`
   width: 100%;
   height: 100%;
 `;
 
-const CornerButtonsList = styled.button`
+const CornerButton = styled(SecondaryButton)`
   position: absolute;
   top: 1rem;
   left: 1rem;
@@ -58,9 +59,9 @@ export function GamePage() {
       <GameTable />
       <OpponentsList players={players} />
       <PlayerState />
-      <CornerButtonsList type='button' onClick={handleLeaveGame} disabled={isLoading}>
+      <CornerButton type='button' onClick={handleLeaveGame} disabled={isLoading}>
         Leave game
-      </CornerButtonsList>
+      </CornerButton>
     </GamePageWrapper>
   );
 }
