@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { createAccount } from '../../api/lobby/api';
 import { PrimaryButton } from '../../components/common/Button';
 import { Form, Label } from '../../components/common/Form';
-import { ErrorSpan } from '../../components/common/Span';
 import { colors } from '../../constants/theme';
 import { useAppDispatch } from '../../hooks/redux';
 import { setAccountData } from '../../store/account/actions';

@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import {
   cardRemHeight,
-  propertyCardAspectRatio,
   propertyCardWidth,
   propertyImgPositions,
 } from '../../../constants/static-data';
@@ -18,9 +17,7 @@ const StyledPropertyCard = styled.div<StyledPropertyCardProps>`
 
   background-image: url(${({ imgUrl }) => imgUrl});
   background-position: ${({ imgPosition }) =>
-    `-${imgPosition.x * propertyCardWidth}rem -${
-      imgPosition.y * cardRemHeight
-    }rem`};
+    `-${imgPosition.x * propertyCardWidth}rem -${imgPosition.y * cardRemHeight}rem`};
   background-size: ${`${propertyCardWidth * 10}rem ${cardRemHeight * 3}rem`};
   border-radius: 0.5rem;
 
@@ -43,11 +40,7 @@ type PropertyCardProps = {
   onClick?: () => void;
 };
 
-export function PropertyCard({
-  property,
-  hoverPointer,
-  onClick,
-}: PropertyCardProps) {
+export function PropertyCard({ property, hoverPointer, onClick }: PropertyCardProps) {
   return (
     <StyledPropertyCard
       imgUrl={`${process.env.PUBLIC_URL}/cards/properties.jpg`}

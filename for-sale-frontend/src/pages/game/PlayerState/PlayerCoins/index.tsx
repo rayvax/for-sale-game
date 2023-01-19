@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useGameAPI } from '../../../../api/game/hooks';
 import { PrimaryButton } from '../../../../components/common/Button';
-import { ErrorSpan } from '../../../../components/common/Span';
 import { colors } from '../../../../constants/theme';
 import { GamePhase } from '../../../../models/game';
 import { useGamePhase, useHand, usePlayerData } from '../../../../store/game/hooks';
@@ -32,10 +31,6 @@ const BidForm = styled.form`
 const CoinsInfo = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const CoinsErrorSpan = styled(ErrorSpan)`
-  font-size: 1rem;
 `;
 
 export function PlayerCoins() {

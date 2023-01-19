@@ -28,23 +28,6 @@ const OpponentInfoRow = styled.div`
     border-bottom: 3px solid ${colors.bg2};
   }
 `;
-const CurrentTurnIndicator = styled.div`
-  width: 100%;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-const OutsideWrapper = styled.div`
-  width: 100%;
-
-  position: absolute;
-  left: 50%;
-  bottom: -3px;
-  transform: translate(-50%, 100%);
-`;
 
 const OpponentNickname = styled.h3`
   margin: 0;
