@@ -3,7 +3,12 @@
 
 ## How to run in dev mode
 
-To run in dev mode open 2 consoles and run these commands in each:
+First install all dependencies:
+```
+npm run install-all
+```
+
+Then to start in dev mode run these commands in separate consoles:
 ```
 npm run start:dev:server
 ```
