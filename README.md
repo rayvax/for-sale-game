@@ -16,6 +16,8 @@ npm run start:dev:server
 npm run start:dev:client
 ```
 
+Currently there is no deployed server, so in order to play you should open locahost:3000 in separate browser for each player.
+
 # For sale game rules
 ## Aim of the game
 A round of For Sale is played in two
