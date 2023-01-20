@@ -1,6 +1,17 @@
 # For sale tabletop game
 "For sale" tabletop game made on React + NestJS
 
+## How to run in dev mode
+
+To run in dev mode open 2 consoles and run comands:
+```
+npm run start:dev:server
+```
+```
+npm run start:dev:client
+```
+
+# For sale game rules
 ## Aim of the game
 A round of For Sale is played in two
 phases. As a first step, players buy
