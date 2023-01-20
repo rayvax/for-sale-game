@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "install:server": "cd ./for-sale-frontend && npm i",
+    "install:client": "cd ./for-sale-backend && npm i",
+    "install-all": "npm run install:client && npm run install:server",
     "start:dev:client": "cd ./for-sale-frontend && npm run start",
     "start:dev:server": "cd ./for-sale-backend && npm run start:dev"
   },

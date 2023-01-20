@@ -1,4 +1,4 @@
-export const homePagePath = '/';
+export const homePagePath = '/for-sale-game/';
 
 export const roomsDashboardPath = `${homePagePath}rooms`;
 export const createRoomPagePath = `${roomsDashboardPath}/create`;
