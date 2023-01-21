@@ -37,12 +37,9 @@ cheque cards. Mix the House cards
 to form the house deck, and do the
 same with the cheque cards to form
 the cheque deck.
-- For a 4 player game, remove the
-first two cards from the game
-without looking at them.
-- Each player receives: 3 players: 28
-coins, 4 players: 21 coins, 5 players:
-16 coins, with 6 players: 14 coins.
+- If there is 3-4 players, remove from each deck random cards without looking: 3 players - 6 cards, 4 players - 2 cards.
+- Each player receives: 3-4 players: 18
+coins, 5-6 players: 14 coins.
 You should keep your coins hidden.
 - The first player is randomly
 determined.
