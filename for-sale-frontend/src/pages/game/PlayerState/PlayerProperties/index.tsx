@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { propertyCardWidth } from '../../../../constants/static-data';
-import { colors } from '../../../../constants/theme';
 import { GamePhase } from '../../../../models/game';
 import { useGamePhase, useHand, usePlayerData } from '../../../../store/game/hooks';
 import { PlayerPropertyCard } from './PlayerProperty';

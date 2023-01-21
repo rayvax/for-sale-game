@@ -9,7 +9,7 @@ import { useAppDispatch } from '../../hooks/redux';
 import { setAccountData } from '../../store/account/actions';
 import { useToken } from '../../store/account/hooks';
 import { getErrorMessage } from '../../utils/error';
-import { roomPath, roomsDashboardPath } from '../../constants/paths';
+import { roomPath } from '../../constants/paths';
 import { toast } from 'react-toastify';
 
 const HomePageContainer = styled.div`
@@ -90,7 +90,7 @@ function HomePage() {
       const token = await createAccount(inputName);
 
       dispatch(setAccountData({ token, login: inputName }));
-      navigate(roomsDashboardPath);
+      navigate(roomPath);
     } catch (e) {
       console.error(e);
       toast.error(getErrorMessage(e));
